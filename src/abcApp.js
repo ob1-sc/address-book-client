@@ -25,9 +25,7 @@
         /*jshint -W069 */
         $httpProvider.defaults.headers.common['Accept'] = 'application/json, text/javascript';
         $httpProvider.defaults.headers.common['Content-Type'] = 'application/vnd.emc.documentum+json; application/json; charset=utf-8';
-        $httpProvider.defaults.headers.common['Cache-Control'] = 'no-cache, no-store, must-revalidate';
         /*jshint -W069 */
-        $httpProvider.defaults.headers.common['Pragma'] = 'no-cache';
     } ]);
 
 

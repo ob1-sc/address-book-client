@@ -14,7 +14,7 @@
         '$rootScope',
         function($http, $q, $timeout, $uibModal, growl, $rootScope) {
 
-            var rootUrl = 'http://localhost:8080/andtherest';
+            var rootUrl = 'http://localhost:8080/api/contacts';
 
             var service = {
 
@@ -228,49 +228,39 @@
                     var defer = $q.defer();
 
                     // make the http call
-                    //$http({
-                    //    method: 'GET',
-                    //    url: rootUrl,
-                    //    params: ( searchWith !== undefined ? {name: searchWith} : undefined)
-                    //
-                    //}).then(
-                    //
-                    //    function(response) {
-                    //
-                    //        // may be want to resolve with just the entries
-                    //        var contacts = [];
-                    //        angular.forEach(response.entries, function(entry) {
-                    //
-                    //            // this is the chance to frig with the entry shape if needed
-                    //            contacts.push(entry);
-                    //
-                    //        });
-                    //
-                    //        defer.resolve(contacts);
-                    //    },
-                    //
-                    //    function(error) {
-                    //        defer.reject(error);
-                    //    }
-                    //);
+                    $http({
+                        method: 'GET',
+                        url: rootUrl,
+                        params: ( searchWith !== undefined ? {name: searchWith} : undefined)
 
-                    $timeout(function() {
+                    }).then(
 
-                        defer.resolve([{
-                            name: 'John Smith',
-                            telephone: '07823 4567821',
-                            id: 'con1',
-                            email: 'john.smith@gmail.com',
-                            groups: ['Friends', 'Work']
-                        },{
-                            name: 'Hannah Banana',
-                            telephone: '04420 75462367',
-                            id: 'con2',
-                            email: 'hannahb@gmail.com',
-                            groups: []
-                        }]);
+                        function(response) {
+                            defer.resolve(response.data);
+                        },
 
-                    }, 500);
+                        function(error) {
+                            defer.reject(error);
+                        }
+                    );
+
+                    //$timeout(function() {
+                    //
+                    //    defer.resolve([{
+                    //        name: 'John Smith',
+                    //        telephone: '07823 4567821',
+                    //        id: 'con1',
+                    //        email: 'john.smith@gmail.com',
+                    //        groups: ['Friends', 'Work']
+                    //    },{
+                    //        name: 'Hannah Banana',
+                    //        telephone: '04420 75462367',
+                    //        id: 'con2',
+                    //        email: 'hannahb@gmail.com',
+                    //        groups: []
+                    //    }]);
+                    //
+                    //}, 500);
                     return defer.promise;
                 },
 
