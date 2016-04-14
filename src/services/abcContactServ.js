@@ -23,20 +23,26 @@
 
                     var defer = $q.defer();
 
-                    $timeout(function() {
+                    // post call to delete new contact
+                    $http({
+                        method: 'DELETE',
+                        url: rootUrl + "/" + contact.id,
+                    }).then(
 
-                        // just resolve
-                        defer.resolve();
+                        function(created) {
 
-                        if ( silent !== true ) {
-                            // tell the user
-                            growl.addSuccessMessage('Deleted contact ' + contact.name, {ttl: 2000});
+                            // just resolve
+                            defer.resolve();
 
-                            // tell the app
-                            $rootScope.$broadcast('contactDeleted', contact);
+                            if ( silent !== true ) {
+                                // tell the user
+                                growl.addSuccessMessage('Deleted contact ' + contact.name, {ttl: 2000});
+
+                                // tell the app
+                                $rootScope.$broadcast('contactDeleted', contact);
+                            }
                         }
-
-                    }, 500);
+                    );
 
                     return defer.promise;
                 },
@@ -46,34 +52,27 @@
 
                     var defer = $q.defer();
 
-                    // example post call
-                    //$http({
-                    //    method: 'POST',
-                    //    url: rootUrl,
-                    //    data: contact
-                    //}).then(
-                    //
-                    //    function(created) {
-                    //        defer.resolve(created);
-                    //    },
-                    //
-                    //    function(error) {
-                    //        defer.reject(error);
-                    //    }
-                    //);
+                    // post call to create new contact
+                    $http({
+                        method: 'POST',
+                        url: rootUrl,
+                        data: contact
+                    }).then(
 
-                    // just resolve with the object
-                    $timeout(function() {
+                        function(created) {
+                            defer.resolve(created.data);
 
-                        defer.resolve(contact);
+                            // tell the user
+                            growl.addSuccessMessage('Created new contact ' + contact.name, {ttl: 2000});
 
-                        // tell the user
-                        growl.addSuccessMessage('Created new contact ' + contact.name, {ttl: 2000});
+                            // tell the app
+                            $rootScope.$broadcast('contactCreated', created.data);
+                        },
 
-                        // tell the app
-                        $rootScope.$broadcast('contactCreated', contact);
-
-                    }, 500);
+                        function(error) {
+                            defer.reject(error);
+                        }
+                    );
 
                     return defer.promise;
                 },
@@ -83,34 +82,27 @@
 
                     var defer = $q.defer();
 
-                    // example post call
-                    //$http({
-                    //    method: 'POST',
-                    //    url: rootUrl + contact.id,
-                    //    data: contact
-                    //}).then(
-                    //
-                    //    function(updated) {
-                    //        defer.resolve(updated);
-                    //    },
-                    //
-                    //    function(error) {
-                    //        defer.reject(error);
-                    //    }
-                    //);
+                    // post call to update the contact
+                    $http({
+                        method: 'POST',
+                        url: rootUrl + "/" + contact.id,
+                        data: contact
+                    }).then(
 
-                    // just resolve with the updated object
-                    $timeout(function() {
+                        function(updated) {
+                            defer.resolve(updated.data);
 
-                        defer.resolve(contact);
+                            // tell the user
+                            growl.addSuccessMessage('Updated details for ' + contact.name, {ttl: 2000});
 
-                        // tell the user
-                        growl.addSuccessMessage('Updated details for ' + contact.name, {ttl: 2000});
+                            // tell the app
+                            $rootScope.$broadcast('contactUpdated', updated.data);
+                        },
 
-                        // tell the app
-                        $rootScope.$broadcast('contactUpdated', contact);
-
-                    }, 500);
+                        function(error) {
+                            defer.reject(error);
+                        }
+                    );
 
                     return defer.promise;
                 },
@@ -120,20 +112,29 @@
 
                     var defer = $q.defer();
 
-                    // call to add to this group
-                    $timeout(function() {
+                    contact.groups.push(group);
 
-                        contact.groups.push(group);
+                    // post call to update the contact groups
+                    $http({
+                        method: 'POST',
+                        url: rootUrl + "/" + contact.id,
+                        data: contact
+                    }).then(
 
-                        defer.resolve(contact);
+                        function(updated) {
+                            defer.resolve(updated.data);
 
-                        // tell the user
-                        growl.addSuccessMessage('Added ' + contact.name + ' to ' + group + ' group', {ttl: 2000});
+                            // tell the user
+                            growl.addSuccessMessage('Added ' + contact.name + ' to ' + group + ' group', {ttl: 2000});
 
-                        // tell the app
-                        $rootScope.$broadcast('contactGroupChange', contact, group);
+                            // tell the app
+                            $rootScope.$broadcast('contactGroupChange', contact, updated.data);
+                        },
 
-                    }, 300);
+                        function(error) {
+                            defer.reject(error);
+                        }
+                    );
 
                     return defer.promise;
                 },
@@ -143,30 +144,39 @@
 
                     var defer = $q.defer();
 
-                    // call to add to this group
-                    $timeout(function() {
-
-                        // find the index
-                        var index;
-                        for ( var i=0; i<contact.groups.length; i++ ) {
-                            if ( contact.groups[i] == group ) {
-                                index = i;
-                                break;
-                            }
+                    // find the index
+                    var index;
+                    for ( var i=0; i<contact.groups.length; i++ ) {
+                        if ( contact.groups[i] == group ) {
+                            index = i;
+                            break;
                         }
-                        if ( angular.isDefined(index) ) {
-                            contact.groups.splice(index, 1);
+                    }
+
+                    contact.groups.splice(index, 1);
+
+                    // post call to update the contact groups
+                    $http({
+                        method: 'POST',
+                        url: rootUrl + "/" + contact.id,
+                        data: contact
+                    }).then(
+
+                        function(updated) {
+
+                            defer.resolve(updated.data);
 
                             // tell the user
                             growl.addSuccessMessage('Removed ' + contact.name + ' from ' + group + ' group', {ttl: 2000});
 
                             // tell the app
-                            $rootScope.$broadcast('contactGroupChange', contact, group);
+                            $rootScope.$broadcast('contactGroupChange', updated.data, group);
+                        },
+
+                        function(error) {
+                            defer.reject(error);
                         }
-
-                        defer.resolve(contact);
-
-                    }, 300);
+                    );
 
                     return defer.promise;
                 },
@@ -244,23 +254,6 @@
                         }
                     );
 
-                    //$timeout(function() {
-                    //
-                    //    defer.resolve([{
-                    //        name: 'John Smith',
-                    //        telephone: '07823 4567821',
-                    //        id: 'con1',
-                    //        email: 'john.smith@gmail.com',
-                    //        groups: ['Friends', 'Work']
-                    //    },{
-                    //        name: 'Hannah Banana',
-                    //        telephone: '04420 75462367',
-                    //        id: 'con2',
-                    //        email: 'hannahb@gmail.com',
-                    //        groups: []
-                    //    }]);
-                    //
-                    //}, 500);
                     return defer.promise;
                 },
 
@@ -269,17 +262,22 @@
 
                     var defer = $q.defer();
 
-                    $timeout(function() {
+                    // make the http call
+                    $http({
+                        method: 'GET',
+                        url: rootUrl,
+                        params: ( group !== undefined ? {group: group} : undefined)
 
-                        defer.resolve([{
-                            name: 'John Smith',
-                            telephone: '07823 4567821',
-                            id: 'con1',
-                            email: 'john.smith@gmail.com',
-                            groups: ['Friends']
-                        }]);
+                    }).then(
 
-                    }, 500);
+                        function(response) {
+                            defer.resolve(response.data);
+                        },
+
+                        function(error) {
+                            defer.reject(error);
+                        }
+                    );
 
                     return defer.promise;
                 }

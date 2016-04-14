@@ -51,10 +51,10 @@
 
                     // this is an existing contact so just update it
                     abcContactServ.updateContact(angular.copy($scope.data.editCopy)).then(
-                        function (updated) {
+                        function (contact) {
 
                             // make this our main contact and stop editing
-                            $scope.data.contact = updated;
+                            $scope.data.contact = contact;
                             $scope.data.editCopy = undefined;
                             $scope.data.inEdit = false;
                             $scope.data.disabled = false;
@@ -71,10 +71,10 @@
                     // this is a new contact so call for it to be added
                     // this is an existing contact so just update it
                     abcContactServ.createContact(angular.copy($scope.data.editCopy)).then(
-                        function (updated) {
+                        function (contact) {
 
                             // make this our main contact and stop editing
-                            $scope.data.contact = updated;
+                            $scope.data.contact = contact;
                             $scope.data.editCopy = undefined;
                             $scope.data.inEdit = false;
                             $scope.data.disabled = false;
@@ -174,7 +174,6 @@
                     $scope.data.isNew = true;
                 }
             }
-
         }
     ]);
 
