@@ -1,10 +1,17 @@
 <div class="abc-contact-details">
     <div class="c-d-left">
         <div class="c-d-icon">
-            <span class="c-d-noimage" ng-if="data.contact.image === undefined"><i class="fa fa-user"></i></span>
-            <img class="c-d-image" ng-if="data.contact.image !== undefined" ng-src="contact.image">
+            <span class="c-d-noimage" ng-if="data.contact.photo === undefined"><i class="fa fa-user"></i></span>
+            <img class="c-d-image" ng-if="data.contact.photo !== undefined" ng-src="{{data.contact.photo}}">
         </div>
         <div class="c-d-name">{{data.contact.name}}</div>
+        <div class="c-d-upload" ng-if="data.inEdit === false">
+            <div class="c-u-wrapper">
+                Upload photo
+                <span class="c-u-btn"><i class="fa fa-upload"></i></span>
+                <input type="file" class="c-u-upload" abc-file-changed="onImageSelected" accept="image/*">
+            </div>
+        </div>
     </div>
     <div class="c-d-right">
         <div class="c-d-details" ng-if="data.inEdit === false">

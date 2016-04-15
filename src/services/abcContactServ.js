@@ -12,11 +12,75 @@
         '$uibModal',
         'growl',
         '$rootScope',
-        function($http, $q, $timeout, $uibModal, growl, $rootScope) {
+        '$window',
+        function($http, $q, $timeout, $uibModal, growl, $rootScope, $window) {
 
             var rootUrl = 'http://localhost:8080/api/contacts';
 
+            // adds the image url to a contact
+            var addPhotoUrl = function(contact) {
+
+                if ( contact.hasPicture === true ) {
+
+                    // adding a url forces the browser to reload images when they change
+                    contact.photo = rootUrl + '/' + contact.id + '/picture?decache=' + Math.random();
+                } else {
+                    contact.photo = undefined;
+                }
+
+                return contact;
+            };
+
             var service = {
+
+                // uploads an image to a contact
+                uploadContactPhoto: function(contact, photo) {
+
+                    var defer = $q.defer();
+
+                    // create a formdata with the file
+                    var formData = new $window.FormData();
+                    formData.append('file', photo);
+
+                    // create a new request
+                    var xhr = new $window.XMLHttpRequest();
+
+                    // handle the finish of the request
+                    // listener for complete
+                    xhr.onreadystatechange  = function () {
+
+                        // is it finished?
+                        if ( xhr.readyState  == 4 ) {
+
+                            // success ?
+                            if ( xhr.status === 200) {
+
+                                // tell the user
+                                growl.addSuccessMessage('Added photo to ' + contact.name, {ttl: 2000});
+
+                                // tell the app
+                                $rootScope.$broadcast('contactUpdated', contact);
+
+                                contact.hasPicture = true;
+                                defer.resolve(addPhotoUrl(contact));
+
+                            } else {
+
+                                // tell the user
+                                growl.addErrorMessage('Could not add photo to ' + contact.name, {ttl: 2000});
+
+                                defer.reject();
+                            }
+                        }
+                    };
+
+                    // open and send the request
+                    xhr.open("POST", rootUrl + '/' + contact.id + '/picture', true);
+                    xhr.setRequestHeader('Accept', 'application/json');
+                    xhr.send(formData);
+
+                    return defer.promise;
+                },
 
                 // deletes a contact
                 deleteContact: function(contact, silent) {
@@ -35,6 +99,7 @@
                             defer.resolve();
 
                             if ( silent !== true ) {
+
                                 // tell the user
                                 growl.addSuccessMessage('Deleted contact ' + contact.name, {ttl: 2000});
 
@@ -60,13 +125,16 @@
                     }).then(
 
                         function(created) {
-                            defer.resolve(created.data);
+
+                            var newContact = addPhotoUrl(created.data);
+
+                            defer.resolve(newContact);
 
                             // tell the user
                             growl.addSuccessMessage('Created new contact ' + contact.name, {ttl: 2000});
 
                             // tell the app
-                            $rootScope.$broadcast('contactCreated', created.data);
+                            $rootScope.$broadcast('contactCreated', newContact);
                         },
 
                         function(error) {
@@ -90,13 +158,16 @@
                     }).then(
 
                         function(updated) {
-                            defer.resolve(updated.data);
+
+                            var updatedContact = addPhotoUrl(updated.data);
+
+                            defer.resolve(updatedContact);
 
                             // tell the user
                             growl.addSuccessMessage('Updated details for ' + contact.name, {ttl: 2000});
 
                             // tell the app
-                            $rootScope.$broadcast('contactUpdated', updated.data);
+                            $rootScope.$broadcast('contactUpdated', updatedContact);
                         },
 
                         function(error) {
@@ -122,13 +193,16 @@
                     }).then(
 
                         function(updated) {
-                            defer.resolve(updated.data);
+
+                            var updatedContact = addPhotoUrl(updated.data);
+
+                            defer.resolve(updatedContact);
 
                             // tell the user
                             growl.addSuccessMessage('Added ' + contact.name + ' to ' + group + ' group', {ttl: 2000});
 
                             // tell the app
-                            $rootScope.$broadcast('contactGroupChange', contact, updated.data);
+                            $rootScope.$broadcast('contactGroupChange', updatedContact, group);
                         },
 
                         function(error) {
@@ -164,13 +238,14 @@
 
                         function(updated) {
 
-                            defer.resolve(updated.data);
+                            var updatedContact = addPhotoUrl(updated.data);
+                            defer.resolve(updatedContact);
 
                             // tell the user
                             growl.addSuccessMessage('Removed ' + contact.name + ' from ' + group + ' group', {ttl: 2000});
 
                             // tell the app
-                            $rootScope.$broadcast('contactGroupChange', updated.data, group);
+                            $rootScope.$broadcast('contactGroupChange', updatedContact, group);
                         },
 
                         function(error) {
@@ -246,7 +321,13 @@
                     }).then(
 
                         function(response) {
-                            defer.resolve(response.data);
+
+                            // loop each and add phot url
+                            var results = [];
+                            angular.forEach(response.data, function(contact) {
+                                results.push(addPhotoUrl(contact));
+                            });
+                            defer.resolve(results);
                         },
 
                         function(error) {
@@ -271,7 +352,12 @@
                     }).then(
 
                         function(response) {
-                            defer.resolve(response.data);
+                            // loop each and add phot url
+                            var results = [];
+                            angular.forEach(response.data, function(contact) {
+                                results.push(addPhotoUrl(contact));
+                            });
+                            defer.resolve(results);
                         },
 
                         function(error) {

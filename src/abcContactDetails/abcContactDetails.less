@@ -9,6 +9,35 @@
     width: 160px;
     bottom: 50px;
     text-align: center;
+    .c-d-upload {
+      padding-top: 30px;
+      .c-u-wrapper {
+        position: relative;
+        font-size: @font-size-small;
+        padding: 4px 6px;
+        .transition (all .35s ease);
+        cursor: pointer;
+        .c-u-btn {
+          display: inline-block;
+          margin-left: 6px;
+          .fa {
+            font-size: 16px;
+            color: @brand-primary;
+          }
+        }
+        &:hover {
+          background-color: darken(@gray-lighter, 5%);
+        }
+        .c-u-upload {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          opacity: 0;
+        }
+      }
+    }
     .c-d-icon {
       .c-d-noimage {
         display: inline-block;
@@ -22,6 +51,15 @@
           font-size: 44px;
           line-height: 100px;
         }
+      }
+      .c-d-image {
+        display: inline-block;
+        border: none;
+        outline: none;
+        margin: 0 auto;
+        border-radius: 100%;
+        width: 100px;
+        height: 100px;
       }
     }
     .c-d-name {

@@ -14,8 +14,8 @@
                 </div>
                 <div class="h-s-result" ng-repeat="contact in data.results" ng-click="showContact(contact)">
                     <div class="h-s-image">
-                        <span class="h-s-noimage" ng-if="contact.image === undefined"><i class="fa fa-user"></i></span>
-                        <img class="h-s-image" ng-if="contact.image !== undefined" ng-src="contact.image">
+                        <span class="h-s-noimage" ng-if="contact.photo === undefined"><i class="fa fa-user"></i></span>
+                        <img class="h-s-img" ng-if="contact.photo !== undefined" ng-src="{{contact.photo}}">
                     </div>
                     <div class="h-s-name">{{contact.name}}</div>
                 </div>

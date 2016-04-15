@@ -28,5 +28,32 @@
         /*jshint -W069 */
     } ]);
 
+    // directive for handling file selection changes
+    app.directive('abcFileChanged', function() {
+        return {
+            restrict: 'A',
+            link: function(scope, element, attrs) {
+                var onChangeHandler = scope.$eval(attrs.abcFileChanged);
+
+                element.bind('change', function(e) {
+
+                    // normalise the data into a simple array of file objects
+                    var list = [];
+                    for ( var i=0; i< e.target.files.length; i++ ) {
+                        list.push(e.target.files[i]);
+                    }
+                    scope.$applyAsync(function() {
+                        onChangeHandler(list);
+                    });
+
+                });
+
+                element.bind('click', function(e) {
+                    element[0].value = null;
+                });
+            }
+        };
+    });
+
 
 })();

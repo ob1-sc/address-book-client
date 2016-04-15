@@ -25,6 +25,26 @@
                 isNew: false
             };
 
+            // handles the selection of a photo and calls the service to upload it
+            $scope.onImageSelected =function(files) {
+
+                // did we get a file?
+                if ( files.length > 0 ) {
+
+                    // call the service to upload it
+                    abcContactServ.uploadContactPhoto($scope.data.contact, files[0]).then(
+
+                        function(updated) {
+                            $scope.data.contact = updated;
+                        },
+
+                        function(error) {
+
+                        }
+                    );
+                }
+            };
+
             // users clicked on the delete button
             $scope.deleteContact = function() {
 
